@@ -22,16 +22,27 @@ function Logo() {
 function Form() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [items, setItems] = useState([]);
+
+  function handleAddItems(item) {
+    // new state depend on old state
+
+    // in react not allow to mutate state -> items.push(item);
+    // allowed : create brand new array which contain all the current items plus the new one
+    setItems((items) => [...items, item]);
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
-    
-    if(!description) return;
 
-    const newItem = {description, quantity, packed: false, id: Date.now()}
-    console.log(newItem)
+    if (!description) return;
 
-    setDescription('')
+    const newItem = { description, quantity, packed: false, id: Date.now() };
+    console.log(newItem);
+
+    handleAddItems(newItem);
+
+    setDescription("");
     setQuantity(1);
   }
 
@@ -50,7 +61,7 @@ function Form() {
         placeholder="Item.."
         value={description}
         onChange={(e) => {
-          console.log(e.target.value)
+          console.log(e.target.value);
           setDescription(e.target.value);
         }}
       />
