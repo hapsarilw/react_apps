@@ -96,7 +96,7 @@ function Main({ children }) {
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData)
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <>
@@ -105,19 +105,28 @@ export default function App() {
         <NumResults movies={movies} />
       </Navbar>
       <Main>
-        <Box>
+        <Box element={<MovieList movies={movies} />} />
+        <Box
+          element={
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          }
+        />
+        {/* <Box>
           <MovieList movies={movies} />
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
           <WatchedMoviesList watched={watched} />
-        </Box>
+        </Box> */}
       </Main>
     </>
   );
 }
 
-function Box({ children }) {
+function Box({ element }) {
   const [isOpen1, setIsOpen1] = useState(true);
 
   return (
@@ -129,7 +138,7 @@ function Box({ children }) {
         {isOpen1 ? "–" : "+"}
       </button>
 
-      {isOpen1 && children}
+      {isOpen1 && element}
     </div>
   );
 }
