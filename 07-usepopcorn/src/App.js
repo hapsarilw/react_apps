@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -58,7 +58,6 @@ function Navbar({ children }) {
     </nav>
   );
 }
-
 function Logo() {
   return (
     <div className="logo">
@@ -94,18 +93,36 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
+const KEY = "7cc56d40";
+
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+  const query = `interstellar`;
+
+  useEffect(function () {
+    async function fetchMovies() {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      setIsLoading(false);
+    }
+    fetchMovies();
+  }, []);
 
   return (
     <>
-      <Navbar movies={movies}>
+      <Navbar>
         <Search />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
-        <Box element={<MovieList movies={movies} />} />
+        <Box element={isLoading ? <Loader /> : <MovieList movies={movies} />} />
+
         <Box
           element={
             <>
@@ -114,16 +131,13 @@ export default function App() {
             </>
           }
         />
-        {/* <Box>
-          <MovieList movies={movies} />
-        </Box>
-        <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
-        </Box> */}
       </Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
 }
 
 function Box({ element }) {
@@ -170,14 +184,16 @@ function WatchedBox() {
 function MovieList({ movies }) {
   return (
     <ul className="list">
-      {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+      {movies.map((movie) => (
+        <div key={movie.imdbID}>
+          <Movie movie={movie} key={movie.imdbID} />
+        </div>
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({movie}) {
   return (
     <li key={movie.imdbID}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
